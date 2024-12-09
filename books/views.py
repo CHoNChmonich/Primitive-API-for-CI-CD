@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_204_NO_CONTENT
 from rest_framework.views import APIView
@@ -23,10 +24,8 @@ class BooksListCreateAPIView(APIView):
 
 class BooksDetailUpdateDeleteAPIView(APIView):
     def get_object(self, request, pk, format=None):
-        try:
-            return Books.objects.get(id=pk)
-        except:
-            return HTTP_404_NOT_FOUND
+
+        return get_object_or_404(Books, id=pk)
 
     def get(self, request, pk, format=None):
         book = self.get_object(request, pk)
@@ -44,4 +43,4 @@ class BooksDetailUpdateDeleteAPIView(APIView):
     def delete(self, request, pk, format=None):
         book = self.get_object(request, pk)
         book.delete()
-        return Response(HTTP_204_NO_CONTENT)
+        return Response(status=HTTP_204_NO_CONTENT)
