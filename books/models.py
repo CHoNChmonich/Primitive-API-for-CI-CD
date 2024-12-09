@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 LANGUAGE_CHOICES = {
     'en': 'English',
     'es': 'Spanish',
@@ -14,6 +14,7 @@ class Books(models.Model):
     author = models.CharField(max_length=255)
     price = models.DecimalField(default=0, max_digits=7, decimal_places=2)
     language = models.CharField(choices=LANGUAGE_CHOICES, default='ru', max_length=100)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='books')
 
     def __str__(self):
         return f'{self.name} за авторством {self.author} | {self.id}'
