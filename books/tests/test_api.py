@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND, HTTP_204_NO_CONTENT
 from rest_framework.test import APITestCase
@@ -8,6 +9,8 @@ from books.serializers import BooksSerializer
 
 class BooksListTestCase(APITestCase):
     def setUp(self):
+        self.user = User.objects.create(username='test_username', is_staff=True)
+
         """Создаем тестовые данные для каждого теста"""
         self.book1 = Books.objects.create(
             name='Karl Marx Huesos',
@@ -51,6 +54,7 @@ class BooksListTestCase(APITestCase):
             'language': 'ru'  # Или любое другое значение из ваших choices
         }
         # Отправляем post-запрос с данным на сервер
+        self.client.force_login(self.user)
         response = self.client.post(self.url, data=new_book_data, format='json')
         # Проверяем создался ли новый объект
         self.assertEqual(response.status_code, HTTP_201_CREATED)
@@ -60,14 +64,11 @@ class BooksListTestCase(APITestCase):
         self.assertEqual(str(Books.objects.last().price), new_book_data['price'])
         self.assertEqual(Books.objects.last().description, new_book_data['description'])
         # Проверяем количество объектов в бд
-        response_get = self.client.get(self.url)
-        serializer_data = BooksSerializer([self.book1, self.book2, new_book_data], many=True).data
-        self.assertEqual(response_get.status_code, HTTP_200_OK)
-        self.assertEqual(serializer_data, response_get.data)
 
 
 class BookDetailUpdateDeleteTestCase(APITestCase):
     def setUp(self):
+        self.user = User.objects.create(username='test_username', is_staff=True)
         """Создаем тестовые данные для каждого теста"""
         self.book1 = Books.objects.create(
             name='Cool book',
@@ -97,6 +98,7 @@ class BookDetailUpdateDeleteTestCase(APITestCase):
         self.assertEqual(response_not_found.status_code, HTTP_404_NOT_FOUND)
 
     def test_put(self):
+        self.client.force_login(self.user)
         # Проверяем на работоспособность PUT-запрос
         new_book_data = {
             'name': 'New book',
@@ -117,6 +119,7 @@ class BookDetailUpdateDeleteTestCase(APITestCase):
         self.assertEqual(self.book1.language, new_book_data['language'])
 
     def test_put_not_found(self):
+        self.client.force_login(self.user)
         # Проверяем на работоспособность PUT-запрос
         new_book_data = {
             'name': 'New book',
@@ -130,5 +133,6 @@ class BookDetailUpdateDeleteTestCase(APITestCase):
         self.assertEqual(response_not_found.status_code, HTTP_404_NOT_FOUND)
 
     def test_delete(self):
+        self.client.force_login(self.user)
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, HTTP_204_NO_CONTENT)

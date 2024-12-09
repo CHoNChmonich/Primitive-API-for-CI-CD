@@ -24,4 +24,5 @@ class BooksListCreateAPIView(ListCreateAPIView):
 
 class BooksDetailUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Books.objects.all()
+    permission_classes = [IsAdminOrReadOnly]
     serializer_class = BooksSerializer
