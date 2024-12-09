@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 
@@ -9,8 +10,11 @@ from books.serializers import BooksSerializer
 class BooksListCreateAPIView(ListCreateAPIView):
     queryset = Books.objects.all()
     serializer_class = BooksSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['price', 'name', 'author']
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['price', 'author']
+    search_fields = ['name', 'description', 'author']
+    ordering_fields = ['price', 'author']
+    ordering = ['price']
 
 
 class BooksDetailUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):

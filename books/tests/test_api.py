@@ -10,7 +10,7 @@ class BooksListTestCase(APITestCase):
     def setUp(self):
         """Создаем тестовые данные для каждого теста"""
         self.book1 = Books.objects.create(
-            name='Cool book',
+            name='Karl Marx Huesos',
             author='Adolf Hitler',
             price='1488',
             description='Nice'
@@ -18,7 +18,7 @@ class BooksListTestCase(APITestCase):
         self.book2 = Books.objects.create(
             name='Bad book',
             author='Karl Marx',
-            price='0',
+            price='2000',
             description='For dumbass'
         )
         self.url = reverse('books:books_list')
@@ -29,12 +29,25 @@ class BooksListTestCase(APITestCase):
         self.assertEqual(response.status_code, HTTP_200_OK)
         self.assertEqual(serializer_data, response.data)
 
+    def test_get_with_search(self):
+        response = self.client.get(self.url, query_params={'search': 'Karl Marx'})
+        self.assertEqual(response.data, BooksSerializer([self.book1, self.book2], many=True).data)
+
+    def test_get_with_filter(self):
+        response = self.client.get(self.url, query_params={'price': '1488'})
+        serializer_data = BooksSerializer(self.book1).data
+        self.assertEqual(response.data, [serializer_data])
+
+    def test_get_with_ordering(self):
+        response = self.client.get(self.url, query_params={'ordering': 'price'})
+        self.assertEqual(response.data, BooksSerializer([self.book1, self.book2], many=True).data)
+
     def test_post(self):
         new_book_data = {
             'name': 'New book',
             'author': 'New Author',
             'description': 'A new book description',
-            'price': '19.99',  # Убедитесь, что цена соответствует формату Decimal
+            'price': '3000.00',  # Убедитесь, что цена соответствует формату Decimal
             'language': 'ru'  # Или любое другое значение из ваших choices
         }
         # Отправляем post-запрос с данным на сервер

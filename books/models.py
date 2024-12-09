@@ -14,3 +14,6 @@ class Books(models.Model):
     author = models.CharField(max_length=255)
     price = models.DecimalField(default=0, max_digits=7, decimal_places=2)
     language = models.CharField(choices=LANGUAGE_CHOICES, default='ru', max_length=100)
+
+    def __str__(self):
+        return f'{self.name} за авторством {self.author} | {self.id}'
