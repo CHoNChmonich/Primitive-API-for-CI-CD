@@ -1,11 +1,14 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
+from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
+from rest_framework.permissions import IsAuthenticated
 
 from books.permissions import IsAuthenticatedOrAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
-from books.models import Books
-from books.serializers import BooksSerializer
+from books.models import Books, UserBookRelation
+from books.serializers import BooksSerializer, UserBookRelationSerializer
+
 
 def auth(request):
     return render(request, 'books/oauth.html')
@@ -28,4 +31,11 @@ class BooksDetailUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Books.objects.all()
     permission_classes = [IsOwnerOrAdminOrReadOnly]
     serializer_class = BooksSerializer
+
+
+class UserBookRelationView(CreateModelMixin, UpdateModelMixin, GenericAPIView):
+    queryset = UserBookRelation.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserBookRelationSerializer
+    lookup_field = 'book'
 

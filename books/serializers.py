@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from books.models import Books, LANGUAGE_CHOICES
+from books.models import Books, LANGUAGE_CHOICES, UserBookRelation
+
 
 class BooksSerializer(serializers.ModelSerializer):
     language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='ru')
@@ -10,4 +11,10 @@ class BooksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Books
         fields = '__all__'
+
+
+class UserBookRelationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBookRelation
+        fields = ['book', 'like', 'in_bookmarks', 'rate']
 

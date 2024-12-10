@@ -27,7 +27,7 @@ class BooksSerializerTestCase(TestCase):
     def test_ok(self):
         serializer_data = BooksSerializer([self.book1, self.book2], many=True).data
         self.assertEqual(serializer_data, [
-            {'id': 1, 'language': 'ru', 'owner_id': 1, 'name': 'Cool book', 'description': 'Nice',
-             'author': 'Adolf Hitler', 'price': '1488.00', 'owner': 1},
-            {'id': 2, 'language': 'ru', 'owner_id': 1, 'name': 'Bad book', 'description': 'For dumbass',
-             'author': 'Karl Marx', 'price': '0.00', 'owner': 1}])
+            {'id': 1, 'language': 'ru', 'owner': 1, 'owner_id': 1, 'name': 'Cool book', 'description': 'Nice',
+             'author': 'Adolf Hitler', 'price': '1488.00', 'readers': []},
+            {'id': 2, 'language': 'ru', 'owner': 1, 'owner_id': 1, 'name': 'Bad book', 'description': 'For dumbass',
+             'author': 'Karl Marx', 'price': '0.00', 'readers': []}])
