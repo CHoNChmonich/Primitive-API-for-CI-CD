@@ -64,6 +64,7 @@ class BooksListTestCase(APITestCase):
         self.assertEqual(Books.objects.last().author, new_book_data['author'])
         self.assertEqual(str(Books.objects.last().price), new_book_data['price'])
         self.assertEqual(Books.objects.last().description, new_book_data['description'])
+        self.assertEqual(Books.objects.last().owner, self.user)
 
     def test_post_authenticated_user(self):
         new_book_data = {
@@ -84,6 +85,7 @@ class BooksListTestCase(APITestCase):
         self.assertEqual(Books.objects.last().author, new_book_data['author'])
         self.assertEqual(str(Books.objects.last().price), new_book_data['price'])
         self.assertEqual(Books.objects.last().description, new_book_data['description'])
+        self.assertEqual(Books.objects.last().owner, authenticated_user)
 
     def test_post_not_allowed(self):
         new_book_data = {

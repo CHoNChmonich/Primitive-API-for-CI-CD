@@ -20,8 +20,12 @@ class BooksListCreateAPIView(ListCreateAPIView):
     ordering_fields = ['price', 'author']
     ordering = ['price']
 
+    def perform_create(self, serializer):
+        serializer.validated_data['owner'] = self.request.user
+        serializer.save()
 
 class BooksDetailUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Books.objects.all()
     permission_classes = [IsOwnerOrAdminOrReadOnly]
     serializer_class = BooksSerializer
+
