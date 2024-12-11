@@ -37,4 +37,7 @@ class BooksSerializerTestCase(TestCase):
         self.assertEqual(serializer_data, [
             {'id': 1, 'name': 'Cool book', 'description': 'Nice', 'price': '148.00', 'author': 'cool author',
              'language': 'ru', 'annotated_likes': 0, 'rating': None,
-             'owner_name': 'te
+             'owner_name': 'test_user', 'readers': []},
+            {'id': 2, 'name': 'Bad book', 'description': 'For dumbass', 'price': '0.00', 'author': 'Karl Marx',
+             'language': 'ru', 'annotated_likes': 0, 'rating': None, 'owner_name': 'test_user', 'readers': []}]
+                         )
