@@ -19,6 +19,7 @@ class Books(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='my_books')
     readers = models.ManyToManyField(User, through='UserBookRelation', related_name='readed_books')
 
+
     def __str__(self):
         return f'{self.name} за авторством {self.author} | {self.id}'
 

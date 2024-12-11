@@ -18,7 +18,8 @@ def auth(request):
 
 class BooksListCreateAPIView(ListCreateAPIView):
     queryset = Books.objects.all().annotate(annotated_likes=Count(Case(When(userbookrelation__like=True, then=1))),
-                                            rating=Avg('userbookrelation__rate'))
+                                            rating=Avg('userbookrelation__rate')
+                                            ).select_related('owner').prefetch_related('readers')
     serializer_class = BooksSerializer
     permission_classes = [IsAuthenticatedOrAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -47,5 +48,3 @@ class UserBookRelationView(UpdateModelMixin, GenericViewSet):
     def get_object(self):
         obj, _ = UserBookRelation.objects.get_or_create(user=self.request.user, book_id=self.kwargs['book'])
         return obj
-
-

@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.db import connection
 from django.db.models import Count, Case, When, Avg
+from django.test.utils import CaptureQueriesContext
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND, HTTP_204_NO_CONTENT, \
     HTTP_403_FORBIDDEN, HTTP_400_BAD_REQUEST
 from rest_framework.test import APITestCase
@@ -30,7 +32,10 @@ class BooksListTestCase(APITestCase):
         self.url = reverse('books:books_list')
 
     def test_get(self):
-        response = self.client.get(self.url)
+
+        with CaptureQueriesContext(connection) as queries:
+            response = self.client.get(self.url)
+            self.assertEqual(2, len(queries))
         serializer_data = BooksSerializer(
             Books.objects.all().annotate(annotated_likes=Count(Case(When(userbookrelation__like=True, then=1))),
                                          rating=Avg('userbookrelation__rate')),

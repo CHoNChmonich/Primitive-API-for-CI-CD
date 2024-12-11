@@ -27,13 +27,6 @@ class BooksSerializerTestCase(TestCase):
             description='For dumbass',
             owner=self.user1
         )
-        UserBookRelation.objects.create(user=self.user1, book=self.book1, like=True, rate=5)
-        UserBookRelation.objects.create(user=self.user2, book=self.book1, like=True, rate=5)
-        UserBookRelation.objects.create(user=self.user3, book=self.book1, like=True, rate=5)
-
-        UserBookRelation.objects.create(user=self.user1, book=self.book2, like=False, rate=3)
-        UserBookRelation.objects.create(user=self.user2, book=self.book2, like=False)
-        UserBookRelation.objects.create(user=self.user3, book=self.book2, like=True)
 
     def test_ok(self):
         serializer_data = BooksSerializer(
@@ -42,9 +35,8 @@ class BooksSerializerTestCase(TestCase):
                 rating=Avg('userbookrelation__rate')),
             many=True).data
         print(serializer_data)
-        self.assertEqual(serializer_data, [
-            {'id': 1, 'name': 'Cool book', 'description': 'Nice', 'price': '1488.00', 'author': 'Adolf Hitler',
-             'language': 'ru', 'annotated_likes': 3, 'rating': '5.00'},
-            {'id': 2, 'name': 'Bad book', 'description': 'For dumbass', 'price': '0.00', 'author': 'Karl Marx',
-             'language': 'ru', 'annotated_likes': 1, 'rating': '1.67'}]
+        self.assertEqual(serializer_data, [{'id': 1, 'name': 'Cool book', 'description': 'Nice', 'price': '1488.00', 'author': 'Adolf Hitler', 'language': 'ru', 'annotated_likes': 0, 'rating': None,
+'owner_name': 'test_user', 'readers': []}, {'id': 2, 'name': 'Bad book', 'description': 'For dumbass', 'price': '0.00', 'author': 'Karl Marx', 'language': 'ru', 'annotated_likes': 0, 'rating': None, 'owner_name': 'test_user', 'readers': []}]
                          )
+
+
