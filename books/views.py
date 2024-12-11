@@ -1,10 +1,10 @@
+from django.db.models import Count, Case, When, Avg
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
-from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from books.permissions import IsAuthenticatedOrAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
@@ -17,7 +17,8 @@ def auth(request):
 
 
 class BooksListCreateAPIView(ListCreateAPIView):
-    queryset = Books.objects.all()
+    queryset = Books.objects.all().annotate(annotated_likes=Count(Case(When(userbookrelation__like=True, then=1))),
+                                            rating=Avg('userbookrelation__rate'))
     serializer_class = BooksSerializer
     permission_classes = [IsAuthenticatedOrAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
