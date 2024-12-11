@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from pycparser.ply.yacc import default_lr
 
 LANGUAGE_CHOICES = {
     'en': 'English',
@@ -18,7 +17,7 @@ class Books(models.Model):
     language = models.CharField(choices=LANGUAGE_CHOICES, default='ru', max_length=100)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='my_books')
     readers = models.ManyToManyField(User, through='UserBookRelation', related_name='readed_books')
-
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=None, null=True)
 
     def __str__(self):
         return f'{self.name} за авторством {self.author} | {self.id}'
@@ -40,3 +39,12 @@ class UserBookRelation(models.Model):
 
     def __str__(self):
         return f'{self.user.username} имеет отношение к книге {self.book.name} | Лайкнул: {self.like} | В закладках: {self.in_bookmarks} | Рейтинг: {self.rate}'
+
+    def save(self, *args, **kwargs):
+        old_rate = self.rate
+        is_created = not self.pk
+        super().save(*args, **kwargs)
+        new_rate = self.rate
+        from books.logic import set_rating
+        if old_rate != new_rate or is_created:
+            set_rating(self.book)

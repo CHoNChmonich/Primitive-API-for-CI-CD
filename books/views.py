@@ -17,8 +17,7 @@ def auth(request):
 
 
 class BooksListCreateAPIView(ListCreateAPIView):
-    queryset = Books.objects.all().annotate(annotated_likes=Count(Case(When(userbookrelation__like=True, then=1))),
-                                            rating=Avg('userbookrelation__rate')
+    queryset = Books.objects.all().annotate(annotated_likes=Count(Case(When(userbookrelation__like=True, then=1)))
                                             ).select_related('owner').prefetch_related('readers')
     serializer_class = BooksSerializer
     permission_classes = [IsAuthenticatedOrAdminOrReadOnly]

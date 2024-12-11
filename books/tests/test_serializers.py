@@ -14,8 +14,8 @@ class BooksSerializerTestCase(TestCase):
         """Создаем тестовые данные для каждого теста"""
         self.book1 = Books.objects.create(
             name='Cool book',
-            author='Adolf Hitler',
-            price='1488',
+            author='cool author',
+            price='148',
             description='Nice',
             owner=self.user1,
 
@@ -31,12 +31,13 @@ class BooksSerializerTestCase(TestCase):
     def test_ok(self):
         serializer_data = BooksSerializer(
             Books.objects.all().annotate(
-                annotated_likes=Count(Case(When(userbookrelation__like=True, then=1))),
-                rating=Avg('userbookrelation__rate')),
+                annotated_likes=Count(Case(When(userbookrelation__like=True, then=1)))),
             many=True).data
         print(serializer_data)
-        self.assertEqual(serializer_data, [{'id': 1, 'name': 'Cool book', 'description': 'Nice', 'price': '1488.00', 'author': 'Adolf Hitler', 'language': 'ru', 'annotated_likes': 0, 'rating': None,
-'owner_name': 'test_user', 'readers': []}, {'id': 2, 'name': 'Bad book', 'description': 'For dumbass', 'price': '0.00', 'author': 'Karl Marx', 'language': 'ru', 'annotated_likes': 0, 'rating': None, 'owner_name': 'test_user', 'readers': []}]
+        self.assertEqual(serializer_data, [
+            {'id': 1, 'name': 'Cool book', 'description': 'Nice', 'price': '148.00', 'author': 'cool author',
+             'language': 'ru', 'annotated_likes': 0, 'rating': None,
+             'owner_name': 'test_user', 'readers': []},
+            {'id': 2, 'name': 'Bad book', 'description': 'For dumbass', 'price': '0.00', 'author': 'Karl Marx',
+             'language': 'ru', 'annotated_likes': 0, 'rating': None, 'owner_name': 'test_user', 'readers': []}]
                          )
-
-
