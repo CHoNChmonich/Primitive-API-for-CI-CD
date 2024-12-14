@@ -2,7 +2,7 @@ from django.db.models import Count, Case, When, Avg
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
@@ -47,3 +47,9 @@ class UserBookRelationView(UpdateModelMixin, GenericViewSet):
     def get_object(self):
         obj, _ = UserBookRelation.objects.get_or_create(user=self.request.user, book_id=self.kwargs['book'])
         return obj
+
+
+class ProtectedAPIView(ListAPIView):
+    serializer_class = BooksSerializer
+    queryset = Books.objects.all()
+    permission_classes = [IsAuthenticated]
