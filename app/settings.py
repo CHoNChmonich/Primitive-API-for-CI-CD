@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'social_django',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'django_celery_beat',
 
     'books',
     'users'
@@ -162,3 +163,15 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = secrets.EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = secrets.EMAIL_HOST_PASSWORD
 DEFAULT_FROM_EMAIL = secrets.DEFAULT_FROM_EMAIL
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Используется Redis как брокер
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULE = {
+    'send_weekly_email': {
+        'task': 'users.tasks.send_weekly_email',
+        'schedule': 604800.0,  # Период - 1 неделя (в секундах)
+    },
+}
