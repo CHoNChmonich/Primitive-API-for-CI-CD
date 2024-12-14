@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-qnkk7nwj)l(m!quoo9b=5!ll^n9-n6&(3vlmhv^rqkpkg+cyjf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,8 +41,11 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'social_django',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 
     'books',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -137,6 +140,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+
+    ],
 }
 
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True

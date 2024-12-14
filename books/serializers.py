@@ -17,6 +17,7 @@ class BooksSerializer(serializers.ModelSerializer):
     rating = serializers.DecimalField(max_digits=3, decimal_places=2, read_only=True)
     owner_name = serializers.CharField(source='owner.username', default='Have not owner', read_only=True)
     readers  = BookReaderSerializer(many=True, read_only=True)
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Books
