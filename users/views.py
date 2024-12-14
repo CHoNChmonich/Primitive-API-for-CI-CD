@@ -1,4 +1,7 @@
-from django.contrib.auth import get_user_model, authenticate
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import  authenticate
 from django.middleware.csrf import get_token
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -7,8 +10,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.serializers import UserRegisterSerializer
-
-User = get_user_model()
+from users.utils import send_verification_email
+from users.models import User
 
 
 class UserRegistrationView(APIView):
@@ -17,18 +20,28 @@ class UserRegistrationView(APIView):
         serializer = UserRegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            refresh.payload.update({
-                'user_id': user.id,
-                'username': user.username
-            })
-        return Response({
+            user.is_active = False
+            user.save()
+            send_verification_email(user, request)
+            return Response({'message': 'Вы успешно зарегистрированы. Проверьте почту для активации аккаунта.'},
+                            status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            'refresh': str(refresh),
 
-            'access': str(refresh.access_token),  # Отправка на клиент
+class ActivateUserView(APIView):
+    def get(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = get_object_or_404(User, pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
 
-        }, status=status.HTTP_201_CREATED)
+        if user is not None and default_token_generator.check_token(user, token):
+            user.is_verified = True
+            user.is_active = True
+            user.save()
+            return Response({'message': 'Ваш аккаунт успешно активирован!'}, status=status.HTTP_200_OK)
+        return Response({'error': 'Недействительная ссылка или пользователь не найден.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLoginView(APIView):

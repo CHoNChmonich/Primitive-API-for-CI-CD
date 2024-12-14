@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.urls import reverse
 from django.db import connection
 from django.db.models import Count, Case, When, Avg
@@ -10,6 +9,7 @@ from rest_framework.utils import json
 
 from books.models import Books, UserBookRelation
 from books.serializers import BooksSerializer
+from users.models import User
 
 
 class BooksListTestCase(APITestCase):

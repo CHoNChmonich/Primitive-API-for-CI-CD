@@ -1,9 +1,9 @@
 from django.test import TestCase
-from django.contrib.auth.models import User
 from django.db.models import Count, Case, When, Avg
 
 from books.models import Books, UserBookRelation
 from books.serializers import BooksSerializer
+from users.models import User
 
 
 class BooksSerializerTestCase(TestCase):
