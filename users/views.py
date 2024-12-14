@@ -20,8 +20,8 @@ class UserRegistrationView(APIView):
         serializer = UserRegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            user.is_active = False
-            user.save()
+            # user.is_active = False
+            # user.save()
             send_verification_email(user, request)
             return Response({'message': 'Вы успешно зарегистрированы. Проверьте почту для активации аккаунта.'},
                             status=status.HTTP_201_CREATED)
